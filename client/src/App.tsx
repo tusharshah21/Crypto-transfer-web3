@@ -1,17 +1,15 @@
+import { Navbar, Welcome, Footer, Services, Transactions } from "./components";
 
-
-const App = ()=>{
-  return (
-    <div className="App">
-      <div className="App-div">
-        <h1 className="text-l">Web3 Transfer</h1>
-        <p>
-          This is a simple web3 transfer application. You can send and receive
-          tokens using this application.
-        </p>
-      </div>
+const App = () => (
+  <div className="min-h-screen">
+    <div className="gradient-bg-welcome">
+      <Navbar />
+      <Welcome />
     </div>
-  );
-}
+    <Services />
+    <Transactions />
+    <Footer />
+  </div>
+);
 
 export default App;
