@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext} from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
 import { Loader } from ".";
+import { TransactionContext } from "../context/TransactionContext";
 
 const companyCommonStyles =
   "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
@@ -27,6 +28,11 @@ const Input: React.FC<InputProps> = ({ placeholder, name, type, value, handleCha
 );
 
 const Welcome: React.FC = () => {
+  // Ensure TransactionContext is not undefined and has connectWallet
+    const transactionContext = useContext(TransactionContext);
+    const connectWallet = transactionContext?.connectWallet ?? (() => {
+      console.warn("connectWallet is not defined in TransactionContext");
+    });
   // Mock state in place of TransactionContext
   const [formData, setFormData] = useState({
     addressTo: "",
@@ -42,10 +48,10 @@ const Welcome: React.FC = () => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
-  const connectWallet = () => {
-    // Mock wallet connection
-    setCurrentAccount("0x123...abc"); // Placeholder address
-  };
+  // const connectWallet = () => {
+  //   // Mock wallet connection
+  //   setCurrentAccount("0x123...abc"); // Placeholder address
+  // };
 
   const sendTransaction = () => {
     setIsLoading(true);
