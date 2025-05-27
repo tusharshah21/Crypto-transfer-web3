@@ -1,5 +1,6 @@
+import React from 'react'
 
-const Transactions = () => {
+function Transactions() {
   return (
     <div>Transactions</div>
   )

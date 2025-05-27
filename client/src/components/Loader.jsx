@@ -1,6 +1,6 @@
+import React from 'react'
 
-
-const Loader = () => {
+function Loader() {
   return (
     <div>Loader</div>
   )

@@ -1,6 +1,6 @@
+import React from 'react'
 
-
-const Services = () => {
+function Services() {
   return (
     <div>Services</div>
   )
