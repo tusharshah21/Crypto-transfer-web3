@@ -15,11 +15,7 @@ const getEthereumContract = () => {
     contractABI,
     signer
   );
-  console.log({
-    provider,
-    signer,
-    transactionContract,
-  });
+  return transactionContract;
 };
 
 export const TransactionsProvider = ({ children }) => {
@@ -30,6 +26,9 @@ export const TransactionsProvider = ({ children }) => {
     keyword: "",
     message: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
+
   const handleChange = (e, name) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
   }
@@ -71,6 +70,36 @@ export const TransactionsProvider = ({ children }) => {
   const sendTransaction= async () => {
     try{
       if(!ethereum) return alert("Please install MetaMask!");
+      const { addressTo, amount, keyword, message } = formData;
+      const transactionContract = getEthereumContract();
+      const parsedAmount = ethers.utils.parseEther(amount);
+
+      await ethereum.request({
+        method: "eth_sendTransaction",
+        params: [{
+          from: currentAccount,
+          to: addressTo,
+          gas: "0x5208", // 21000 Gwei
+          // Convert amount to Wei and then to Hex
+          value: parsedAmount._hex,
+        }],
+      });
+
+      const transactionHash=await transactionContract.addToBlockchain(
+        addressTo,
+        parsedAmount,
+        keyword,
+        message
+      );
+      setIsLoading(true);
+      console.log(`Loading - ${transactionHash.hash}`);
+      await transactionHash.wait();
+      console.log(`Success - ${transactionHash.hash}`);
+      setIsLoading(false);
+
+      const transactionCount=await transactionContract.getTransactionCount();
+      setTransactionCount(transactionCount.toNumber());
+      window.location.reload();
     }catch (error) {
       console.error("Error sending transaction:", error);
       throw new Error("Transaction failed.");
@@ -78,7 +107,7 @@ export const TransactionsProvider = ({ children }) => {
   }
 
   return (
-    <TransactionContext.Provider value={{ connectWallet, currentAccount, formData, setFormData, handleChange, sendTransaction }}>
+    <TransactionContext.Provider value={{ connectWallet, currentAccount, formData, isLoading, setFormData, handleChange, sendTransaction }}>
       {children}
     </TransactionContext.Provider>
   );
