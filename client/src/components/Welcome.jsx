@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
+import { TransactionContext } from "../context/TransactionContext";
 
 // Removed: import { shortenAddress } from "../utils/shortenAddress";
 import { Loader } from ".";
@@ -28,6 +29,8 @@ const Welcome = () => {
     message: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const {value} = React.useContext(TransactionContext);
+  console.log("TransactionContext value:", value);
 
   const handleChange = (e, name) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
