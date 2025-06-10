@@ -52,7 +52,7 @@ export const TransactionsProvider = ({ children }) => {
             ).toLocaleString(),
             message: transaction.message,
             keyword: transaction.keyword,
-            amount: parseInt(transaction.amount._hex) / 10 ** 18,
+            amount: parseInt(transaction.amount._hex) / (10 ** 18),
           })
         );
 
@@ -92,9 +92,13 @@ export const TransactionsProvider = ({ children }) => {
     try {
       if (ethereum) {
         const transactionsContract = createEthereumContract();
-        const currentTransactionCount = await transactionsContract.getTransactionCount();
+        const currentTransactionCount =
+          await transactionsContract.getTransactionCount();
 
-        window.localStorage.setItem("transactionCount", currentTransactionCount);
+        window.localStorage.setItem(
+          "transactionCount",
+          currentTransactionCount
+        );
       }
     } catch (error) {
       console.log(error);
@@ -102,7 +106,6 @@ export const TransactionsProvider = ({ children }) => {
       throw new Error("No ethereum object");
     }
   };
-
 
   const connectWallet = async () => {
     try {
@@ -118,55 +121,55 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
-
   const sendTransaction = async () => {
-      try {
-        if (ethereum) {
-          const { addressTo, amount, keyword, message } = formData;
-          const transactionsContract = createEthereumContract();
-          const parsedAmount = ethers.utils.parseEther(amount);
-  
-          await ethereum.request({
-            method: "eth_sendTransaction",
-            params: [
-              {
-                from: currentAccount,
-                to: addressTo,
-                gas: "0x5208",
-                value: parsedAmount._hex,
-              },
-            ],
-          });
-  
-          const transactionHash = await transactionsContract.addToBlockchain(
+    try {
+      if (ethereum) {
+        const { addressTo, amount, keyword, message } = formData;
+        const transactionsContract = createEthereumContract();
+        const parsedAmount = ethers.utils.parseEther(amount);
+
+        await ethereum.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              from: currentAccount,
+              to: addressTo,
+              gas: "0x5208",
+              value: parsedAmount._hex,
+            },
+          ],
+        });
+
+        const transactionHash =
+          await transactionsContract.addToBlockchain(
             addressTo,
             parsedAmount,
             message,
             keyword
           );
-  
-          setIsLoading(true);
-          console.log(`Loading - ${transactionHash.hash}`);
-          await transactionHash.wait();
-          console.log(`Success - ${transactionHash.hash}`);
-          setIsLoading(false);
-  
-          const transactionsCount =
-            await transactionsContract.getTransactionCount();
-  
-          setTransactionCount(transactionsCount.toNumber());
-          window.location.reload();
-        } else {
-          console.log("No ethereum object");
-        }
-      } catch (error) {
-        console.log(error);
-  
-        throw new Error("No ethereum object");
-      }
-    };
 
-    useEffect(() => {
+        setIsLoading(true);
+        console.log(`Loading - ${transactionHash.hash}`);
+        await transactionHash.wait();
+        console.log(`Success - ${transactionHash.hash}`);
+        setIsLoading(false);
+
+        const transactionsCount =
+          await transactionsContract.getTransactionCount();
+
+        setTransactionCount(transactionsCount.toNumber());
+        window.location.reload();
+      } else {
+        console.log("No ethereum object");
+      }
+    } catch (error) {
+      console.log(error);
+
+      throw new Error("No ethereum object");
+    }
+  };
+
+  useEffect(() => {
     checkIfWalletIsConnected();
     checkIfTransactionsExists();
   }, [transactionCount]);
