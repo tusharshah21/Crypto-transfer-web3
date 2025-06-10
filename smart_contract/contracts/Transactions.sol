@@ -13,7 +13,6 @@ contract Transactions {
         uint amount,
         string message,
         uint256 timestamp,
-        string account,
         string keyword
     );
 
@@ -23,17 +22,15 @@ contract Transactions {
         uint amount;
         string message;
         uint256 timestamp;
-        string account;
         string keyword;
     }
 
     TransferStruct[] transactions;
 
-    function transfer(
+    function addToBlockchain(
         address payable receiver,
         uint amount,
         string memory message,
-        string memory account,
         string memory keyword
     ) public {
         transactionCount += 1;
@@ -44,7 +41,6 @@ contract Transactions {
                 amount,
                 message,
                 block.timestamp,
-                account,
                 keyword
             )
         );
@@ -55,11 +51,8 @@ contract Transactions {
             amount,
             message,
             block.timestamp,
-            account,
             keyword
         );
-
-        receiver.transfer(amount);
     }
 
     function getAllTransactions()
